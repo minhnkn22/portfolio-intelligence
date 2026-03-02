@@ -23,3 +23,17 @@ Started: 2026-03-02
 - Files: src/app/api/sentiment/route.ts, src/app/api/sentiment/__tests__/route.test.ts
 - **Learnings:** OpenAI mock pattern - mock the module, capture create fn, return structured choices
 ---
+
+## 2026-03-02 - US-006: LocalStorage Persistence & Polish
+- Added localStorage persistence (save/restore/clear) with key 'portfolio-analysis'
+- Added Clear Results and Re-analyze buttons to page
+- Added ErrorBoundary component for graceful error handling
+- Updated layout.tsx with proper meta tags (title, description, og)
+- Updated MagicPanel to support initialData/skipFetch/onAnalysisComplete props
+- Updated ImageUpload to pass imageData back to parent
+- Rewrote README with env vars documentation, setup steps, feature list
+- Cleaned up .env.example (removed unused NEWS_API_KEY)
+- 6 localStorage tests: save, restore, clear, missing data, corrupted data, overwrite
+- Files: src/app/page.tsx, src/app/layout.tsx, src/components/MagicPanel.tsx, src/components/ImageUpload.tsx, src/components/ErrorBoundary.tsx, src/__tests__/localStorage.test.ts, README.md, .env.example
+- **Learnings:** MagicPanel needed skipFetch/initialData props to support restored state without re-fetching
+---
