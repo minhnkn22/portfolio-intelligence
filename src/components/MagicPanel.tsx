@@ -25,6 +25,9 @@ export interface TickerData {
 interface MagicPanelProps {
   tickers: string[];
   onPipelineStep?: (step: PipelineStep) => void;
+  onAnalysisComplete?: (data: TickerData[]) => void;
+  initialData?: TickerData[];
+  skipFetch?: boolean;
 }
 
 const STEP_LABELS: { key: PipelineStep; label: string }[] = [
@@ -150,9 +153,17 @@ function TickerCard({ data }: { data: TickerData }) {
   );
 }
 
-export default function MagicPanel({ tickers, onPipelineStep }: MagicPanelProps) {
-  const [tickerData, setTickerData] = useState<TickerData[]>([]);
-  const [currentStep, setCurrentStep] = useState<PipelineStep>('extract');
+export default function MagicPanel({
+  tickers,
+  onPipelineStep,
+  onAnalysisComplete,
+  initialData,
+  skipFetch,
+}: MagicPanelProps) {
+  const [tickerData, setTickerData] = useState<TickerData[]>(initialData || []);
+  const [currentStep, setCurrentStep] = useState<PipelineStep>(
+    initialData?.length ? 'done' : 'extract'
+  );
   const [error, setError] = useState<string | null>(null);
 
   const updateStep = useCallback(
@@ -164,7 +175,7 @@ export default function MagicPanel({ tickers, onPipelineStep }: MagicPanelProps)
   );
 
   useEffect(() => {
-    if (tickers.length === 0) return;
+    if (tickers.length === 0 || skipFetch) return;
 
     let cancelled = false;
 
@@ -235,6 +246,7 @@ export default function MagicPanel({ tickers, onPipelineStep }: MagicPanelProps)
         if (!cancelled) {
           setTickerData(combined);
           updateStep('done');
+          onAnalysisComplete?.(combined);
         }
       } catch (err) {
         if (!cancelled) {
@@ -247,7 +259,7 @@ export default function MagicPanel({ tickers, onPipelineStep }: MagicPanelProps)
     return () => {
       cancelled = true;
     };
-  }, [tickers, updateStep]);
+  }, [tickers, updateStep, skipFetch, onAnalysisComplete]);
 
   if (tickers.length === 0) return null;
 

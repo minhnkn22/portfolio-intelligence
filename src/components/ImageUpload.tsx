@@ -4,7 +4,7 @@ import { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 
 interface ImageUploadProps {
-  onTickersExtracted?: (tickers: string[]) => void;
+  onTickersExtracted?: (tickers: string[], imageData?: string) => void;
 }
 
 export default function ImageUpload({ onTickersExtracted }: ImageUploadProps) {
@@ -29,7 +29,7 @@ export default function ImageUpload({ onTickersExtracted }: ImageUploadProps) {
       }
       const extracted = data.tickers || [];
       setTickers(extracted);
-      onTickersExtracted?.(extracted);
+      onTickersExtracted?.(extracted, base64Image);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to extract tickers');
     } finally {
