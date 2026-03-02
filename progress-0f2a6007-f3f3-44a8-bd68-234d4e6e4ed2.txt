@@ -29,3 +29,30 @@ Started: 2026-03-02T12:52+07:00
 - Files: src/app/api/extract-tickers/route.ts, src/components/ImageUpload.tsx
 - **Learnings:** OpenAI vision accepts data URLs directly; regex /^[A-Z]{1,5}$/ for ticker validation
 ---
+# Progress Log
+Run: 0f2a6007-f3f3-44a8-bd68-234d4e6e4ed2
+Task: Portfolio Intelligence Dashboard v2
+Started: 2026-03-02
+
+## Codebase Patterns
+- Next.js 16 App Router with src/ directory structure
+- API routes at src/app/api/<name>/route.ts
+- Tests at src/app/api/<name>/__tests__/route.test.ts
+- API route tests need `/** @jest-environment node */` directive at top
+- Jest 30 uses --testPathPatterns (not --testPathPattern)
+- Use Finnhub API for both prices and news (single API key)
+- Finnhub quote: c=current, d=change, dp=changePercent
+- Finnhub company-news: headline, url, source, datetime (unix seconds)
+
+---
+
+## 2026-03-02 13:20 - US-003: News & Price API Routes
+- Created POST /api/prices endpoint using Finnhub quote API
+- Created POST /api/news endpoint using Finnhub company-news API
+- Both handle partial failures via Promise.allSettled
+- Both validate input and check for FINNHUB_API_KEY env var
+- News limited to 5 articles per ticker, 7-day window
+- Files: src/app/api/prices/route.ts, src/app/api/news/route.ts
+- Tests: 5 tests each for prices and news routes (10 total, all passing)
+- **Learnings:** Finnhub free tier works for both quotes and news
+---
