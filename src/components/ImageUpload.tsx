@@ -3,7 +3,11 @@
 import { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 
-export default function ImageUpload() {
+interface ImageUploadProps {
+  onTickersExtracted?: (tickers: string[]) => void;
+}
+
+export default function ImageUpload({ onTickersExtracted }: ImageUploadProps) {
   const [preview, setPreview] = useState<string | null>(null);
   const [tickers, setTickers] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
@@ -23,13 +27,15 @@ export default function ImageUpload() {
       if (!res.ok) {
         throw new Error(data.error || 'Failed to extract tickers');
       }
-      setTickers(data.tickers || []);
+      const extracted = data.tickers || [];
+      setTickers(extracted);
+      onTickersExtracted?.(extracted);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to extract tickers');
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [onTickersExtracted]);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
