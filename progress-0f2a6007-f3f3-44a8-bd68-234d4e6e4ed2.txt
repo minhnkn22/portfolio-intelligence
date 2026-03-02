@@ -21,3 +21,11 @@ Started: 2026-03-02T12:52+07:00
 - Files: src/components/ImageUpload.tsx, src/app/page.tsx, .env.example, jest.config.ts, jest.setup.ts
 - **Learnings:** next/jest import needs .js extension in Next 16; setupFilesAfterEnv not setupFilesAfterSetup
 ---
+
+## 2026-03-02 13:10 - US-002: OCR Ticker Extraction
+- Created POST /api/extract-tickers endpoint using OpenAI GPT-4o-mini vision
+- Accepts base64 image, extracts tickers, validates (uppercase 1-5 chars)
+- Updated ImageUpload component: calls API after upload, shows loading spinner, error state, ticker list
+- Files: src/app/api/extract-tickers/route.ts, src/components/ImageUpload.tsx
+- **Learnings:** OpenAI vision accepts data URLs directly; regex /^[A-Z]{1,5}$/ for ticker validation
+---
