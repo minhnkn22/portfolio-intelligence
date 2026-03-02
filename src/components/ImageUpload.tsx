@@ -5,16 +5,43 @@ import { useDropzone } from 'react-dropzone';
 
 export default function ImageUpload() {
   const [preview, setPreview] = useState<string | null>(null);
+  const [tickers, setTickers] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const extractTickers = useCallback(async (base64Image: string) => {
+    setLoading(true);
+    setError(null);
+    setTickers([]);
+    try {
+      const res = await fetch('/api/extract-tickers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image: base64Image }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to extract tickers');
+      }
+      setTickers(data.tickers || []);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to extract tickers');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
     if (!file) return;
     const reader = new FileReader();
     reader.onload = () => {
-      setPreview(reader.result as string);
+      const result = reader.result as string;
+      setPreview(result);
+      extractTickers(result);
     };
     reader.readAsDataURL(file);
-  }, []);
+  }, [extractTickers]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -52,6 +79,38 @@ export default function ImageUpload() {
             data-testid="preview-image"
             className="max-h-64 rounded-lg shadow-lg"
           />
+        </div>
+      )}
+
+      {loading && (
+        <div className="mt-6 flex items-center justify-center gap-2" data-testid="loading-spinner">
+          <svg className="animate-spin h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+          </svg>
+          <span className="text-blue-500">Extracting tickers…</span>
+        </div>
+      )}
+
+      {error && (
+        <div className="mt-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700" data-testid="error-message">
+          {error}
+        </div>
+      )}
+
+      {tickers.length > 0 && !loading && (
+        <div className="mt-6" data-testid="tickers-list">
+          <h3 className="text-lg font-semibold mb-2">Extracted Tickers</h3>
+          <div className="flex flex-wrap gap-2">
+            {tickers.map((ticker) => (
+              <span
+                key={ticker}
+                className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium"
+              >
+                {ticker}
+              </span>
+            ))}
+          </div>
         </div>
       )}
     </div>
