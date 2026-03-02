@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import OpenAI from 'openai';
 
 const TICKER_REGEX = /^[A-Z]{1,5}$/;
 
@@ -15,7 +14,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+    const apiKey = process.env.OPENAI_API_KEY;
+
+    if (!apiKey) {
+      // Demo fallback: return sample tickers when no API key configured
+      const sampleTickers = ['AAPL', 'TSLA', 'GOOGL', 'VNM', 'HPG'];
+      return NextResponse.json({ tickers: sampleTickers, demo: true });
+    }
+
+    const OpenAI = (await import('openai')).default;
+    const openai = new OpenAI({ apiKey });
 
     const dataUrl = image.startsWith('data:')
       ? image
@@ -43,7 +51,6 @@ export async function POST(request: NextRequest) {
 
     const content = response.choices[0]?.message?.content || '[]';
 
-    // Extract JSON array from response (handle markdown code blocks)
     const jsonMatch = content.match(/\[[\s\S]*?\]/);
     if (!jsonMatch) {
       return NextResponse.json({ tickers: [] });

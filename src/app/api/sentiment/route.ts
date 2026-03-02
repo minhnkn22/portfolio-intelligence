@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import OpenAI from 'openai';
+
 
 interface NewsArticle {
   title: string;
@@ -63,6 +63,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (tickersWithNews.length > 0) {
+      const OpenAI = (await import('openai')).default;
       const openai = new OpenAI({ apiKey });
 
       const tickerSections = tickersWithNews.map((ticker) => {
