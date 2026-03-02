@@ -1,0 +1,23 @@
+# Progress Log
+Run: 0f2a6007-f3f3-44a8-bd68-234d4e6e4ed2
+Task: Portfolio Intelligence Dashboard v2
+Started: 2026-03-02T12:52+07:00
+
+## Codebase Patterns
+- Next.js 16 + React 19 + Tailwind v4 (uses @import "tailwindcss" not @tailwind directives)
+- App Router: src/app/page.tsx, src/app/layout.tsx
+- Components: src/components/
+- Jest config uses `next/jest.js` (must include .js extension in Next 16)
+- Tests: src/components/__tests__/
+- react-dropzone for file upload
+
+---
+
+## 2026-03-02 12:52 - US-001: Project Setup & Upload UI
+- Created ImageUpload component with react-dropzone (drag-drop, preview)
+- Updated app/page.tsx with hero section + upload area
+- Added .env.example with OPENAI_API_KEY, FINNHUB_API_KEY, NEWS_API_KEY
+- Set up Jest + React Testing Library with 4 passing tests
+- Files: src/components/ImageUpload.tsx, src/app/page.tsx, .env.example, jest.config.ts, jest.setup.ts
+- **Learnings:** next/jest import needs .js extension in Next 16; setupFilesAfterEnv not setupFilesAfterSetup
+---
